@@ -23,9 +23,6 @@ public class ExperimentTest{
     Experiment experiment1;
 
     @Mock
-    ParticipantRepository mockParticipantRepository;
-
-    @Mock
     Client mockClient;
 
     @Mock
@@ -41,8 +38,7 @@ public class ExperimentTest{
                         new Alternative("a"),
                         new Alternative("b"),
                         new Alternative("c")
-                ),
-                mockParticipantRepository
+                )
         );
 
         when(mockClient.getClientId()).thenReturn("client1");
@@ -73,9 +69,7 @@ public class ExperimentTest{
         Alternative chosenAlternative = new Alternative("a");
 
         when(mockChoiceStrategy.choose(experiment1, mockClient)).thenReturn(chosenAlternative);
-        when(mockParticipantRepository.getParticipant(experiment1, mockClient)).thenReturn(null);
         when(mockRandomGenerator.getRandom()).thenReturn(0.0);
-        when(mockParticipantRepository.recordParticipation(experiment1, mockClient, chosenAlternative)).thenReturn(chosenAlternative);
 
         ParticipationResult result = experiment1.participate(mockClient);
 
@@ -83,34 +77,15 @@ public class ExperimentTest{
     }
 
     @Test
-    public void testParticipateWhenIsParticipatingAlready(){
-
-        Alternative preExistingAlternative = new Alternative("b");
-
-        when(mockParticipantRepository.getParticipant(experiment1, mockClient)).thenReturn(preExistingAlternative);
-
-        ParticipationResult result = experiment1.participate(mockClient);
-
-        verify(mockRandomGenerator, never()).getRandom();
-        verify(mockChoiceStrategy, never()).choose(any(Experiment.class), any(Client.class));
-        verify(mockParticipantRepository, never()).recordParticipation(any(Experiment.class), any(Client.class), any(Alternative.class));
-
-        assertThat(result, is(new ParticipationResult(true, preExistingAlternative)));
-    }
-
-    @Test
     public void testParticipantShouldGetControlAndNotParticipateAboveTrafficFraction(){
 
         experiment1.setTrafficFraction(0); //no-one should participate
 
-        when(mockParticipantRepository.getParticipant(experiment1, mockClient)).thenReturn(null);
         when(mockRandomGenerator.getRandom()).thenReturn(1.0);
 
         ParticipationResult result = experiment1.participate(mockClient);
 
         verify(mockChoiceStrategy, never()).choose(any(Experiment.class), any(Client.class));
-        verify(mockParticipantRepository, never()).recordParticipation(any(Experiment.class), any(Client.class), any(Alternative.class));
-
         assertThat(result, is(new ParticipationResult(false, experiment1.getControl())));
     }
 
@@ -120,14 +95,11 @@ public class ExperimentTest{
         experiment1.setTrafficFraction(0.5); //50% will participate
         Alternative chosenAlternative = new Alternative("b");
 
-        when(mockParticipantRepository.getParticipant(experiment1, mockClient)).thenReturn(null);
         when(mockRandomGenerator.getRandom()).thenReturn(0.50001); //but we are just over the threshold
 
         ParticipationResult result = experiment1.participate(mockClient);
 
         verify(mockChoiceStrategy, never()).choose(any(Experiment.class), any(Client.class));
-        verify(mockParticipantRepository, never()).recordParticipation(any(Experiment.class), any(Client.class), any(Alternative.class));
-
         assertThat(result, is(new ParticipationResult(false, experiment1.getControl())));
     }
 
@@ -137,10 +109,8 @@ public class ExperimentTest{
         experiment1.setTrafficFraction(0.5); //50% will participate
         Alternative chosenAlternative = new Alternative("a");
 
-        when(mockParticipantRepository.getParticipant(experiment1, mockClient)).thenReturn(null);
         when(mockRandomGenerator.getRandom()).thenReturn(0.5);//matches the traffic fraction
         when(mockChoiceStrategy.choose(experiment1, mockClient)).thenReturn(chosenAlternative);
-        when(mockParticipantRepository.recordParticipation(experiment1, mockClient, chosenAlternative)).thenReturn(chosenAlternative);
 
         ParticipationResult result = experiment1.participate(mockClient);
 

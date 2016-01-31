@@ -1,7 +1,6 @@
 package uk.co.creativefootprint.sixpack4j.model;
 
 import uk.co.creativefootprint.sixpack4j.exception.TooFewAlternativesException;
-import uk.co.creativefootprint.sixpack4j.repository.ParticipantRepository;
 
 import java.util.*;
 
@@ -17,18 +16,15 @@ public class Experiment{
     private List<Alternative> alternatives;
     private boolean isArchived;
     private ChoiceStrategy strategy = new UniformChoiceStrategy();
-    private ParticipantRepository participantRepository;
     private RandomGenerator randomGenerator = new RandomGenerator();
 
-    public Experiment(String name, List<Alternative> alternatives,
-                      ParticipantRepository participantRepository){
+    public Experiment(String name, List<Alternative> alternatives){
 
         if(alternatives.size()<MIN_ALTERNATIVES)
             throw new TooFewAlternativesException(MIN_ALTERNATIVES, alternatives.size());
 
         this.name = name;
         this.alternatives = Collections.unmodifiableList(new ArrayList<>(alternatives));
-        this.participantRepository = participantRepository;
     }
 
     public String getName() {
@@ -92,26 +88,6 @@ public class Experiment{
     }
 
     public ParticipationResult participate(Client client){
-
-        Alternative alternative = participantRepository.getParticipant(this, client);
-
-        if(alternative != null)
-            return new ParticipationResult(true, alternative);
-
-        ParticipationResult chosen = chooseAlternative(client);
-        if(!chosen.isParticipating()){
-            return chosen;
-        }
-
-        Alternative actual = participantRepository.recordParticipation(
-                this,
-                client,
-                chosen.getAlternative());
-
-        return new ParticipationResult(true, actual);
-    }
-
-    private ParticipationResult chooseAlternative(Client client){
 
         if(randomGenerator.getRandom() > getTrafficFraction()){
             return new ParticipationResult(false, getControl());
