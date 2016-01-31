@@ -1,5 +1,6 @@
 package uk.co.creativefootprint.sixpack4j.model;
 
+import uk.co.creativefootprint.sixpack4j.exception.InvalidExperimentException;
 import uk.co.creativefootprint.sixpack4j.exception.TooFewAlternativesException;
 
 import java.util.*;
@@ -67,8 +68,12 @@ public class Experiment{
         return isArchived;
     }
 
-    public void setArchived(boolean archived) {
-        isArchived = archived;
+    public void archive() {
+        isArchived = true;
+    }
+
+    public void unarchive(){
+        isArchived = false;
     }
 
     public Alternative getControl() {
@@ -89,10 +94,19 @@ public class Experiment{
 
     public ParticipationResult participate(Client client){
 
+        if(isArchived)
+            return new ParticipationResult(false, getControl());
+
         if(randomGenerator.getRandom() > getTrafficFraction()){
             return new ParticipationResult(false, getControl());
         }
 
         return new ParticipationResult(true, getStrategy().choose(this, client));
+    }
+
+    public void convert(Client client, Kpi kpi){
+
+        if(isArchived)
+            throw new InvalidExperimentException("This experiment has been archived");
     }
 }

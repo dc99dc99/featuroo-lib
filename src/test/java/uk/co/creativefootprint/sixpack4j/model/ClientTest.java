@@ -5,6 +5,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsNot.not;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -18,6 +21,6 @@ public class ClientTest {
 
         when(experiment.getName()).thenReturn("experiment1");
         Client client = new Client("a");
-        System.out.println(client.getHash(experiment));
+        assertThat(client.getHash(experiment), not(nullValue()));
     }
 }

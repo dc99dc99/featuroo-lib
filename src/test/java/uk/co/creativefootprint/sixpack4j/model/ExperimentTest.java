@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import uk.co.creativefootprint.sixpack4j.exception.InvalidExperimentException;
 import uk.co.creativefootprint.sixpack4j.repository.ParticipantRepository;
 
 import java.util.Arrays;
@@ -24,12 +25,12 @@ public class ExperimentTest{
 
     @Mock
     Client mockClient;
-
     @Mock
     ChoiceStrategy mockChoiceStrategy;
-
     @Mock
     RandomGenerator mockRandomGenerator;
+    @Mock
+    Kpi mockKpi;
 
     @Before
     public void before(){
@@ -116,4 +117,33 @@ public class ExperimentTest{
 
         assertThat(result, is(new ParticipationResult(true, chosenAlternative)));
     }
+
+    @Test
+    public void testShouldNotParticipateWhenExperimentArchived(){
+
+        experiment1.archive();
+
+        ParticipationResult result = experiment1.participate(mockClient);
+
+        verify(mockChoiceStrategy, never()).choose(any(Experiment.class), any(Client.class));
+        assertThat(result, is(new ParticipationResult(false, experiment1.getControl())));
+    }
+
+    public void testConvertNoKpi(){
+        experiment1.unarchive();
+        experiment1.convert(mockClient, null);
+    }
+
+    @Test (expected = InvalidExperimentException.class)
+    public void testConvertNoKpiArchived(){
+        experiment1.archive();
+        experiment1.convert(mockClient, null);
+    }
+
+    @Test
+    public void testConvertWithKpi(){
+        experiment1.unarchive();
+        experiment1.convert(mockClient, mockKpi);
+    }
+
 }
