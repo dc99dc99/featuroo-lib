@@ -1,29 +1,34 @@
 package uk.co.creativefootprint.sixpack4j.model;
 
 import uk.co.creativefootprint.sixpack4j.exception.TooFewAlternativesException;
+import uk.co.creativefootprint.sixpack4j.repository.ParticipantRepository;
 
 import java.util.*;
 
 public class Experiment{
 
     private static int MIN_ALTERNATIVES = 2;
+    private static double DEFAULT_TRAFFIC_FRACTION = 1;
+
     private String name;
     private String description;
     private Alternative winner;
-    private float trafficFraction;
+    private double trafficFraction = DEFAULT_TRAFFIC_FRACTION;
     private List<Alternative> alternatives;
     private boolean isArchived;
-    private HashMap<Client, Alternative> participants;
     private ChoiceStrategy strategy = new UniformChoiceStrategy();
+    private ParticipantRepository participantRepository;
+    private RandomGenerator randomGenerator = new RandomGenerator();
 
-    public Experiment(String name, List<Alternative> alternatives){
+    public Experiment(String name, List<Alternative> alternatives,
+                      ParticipantRepository participantRepository){
 
         if(alternatives.size()<MIN_ALTERNATIVES)
             throw new TooFewAlternativesException(MIN_ALTERNATIVES, alternatives.size());
 
-        this.participants = new HashMap<>();
         this.name = name;
-        this.alternatives = new ArrayList<>(alternatives);
+        this.alternatives = Collections.unmodifiableList(new ArrayList<>(alternatives));
+        this.participantRepository = participantRepository;
     }
 
     public String getName() {
@@ -50,30 +55,16 @@ public class Experiment{
         this.winner = winner;
     }
 
-    public float getTrafficFraction() {
+    public double getTrafficFraction() {
         return trafficFraction;
     }
 
-    public void setTrafficFraction(float trafficFraction) {
+    public void setTrafficFraction(double trafficFraction) {
         this.trafficFraction = trafficFraction;
     }
 
     public List<Alternative> getAlternatives() {
         return alternatives;
-    }
-
-    public void addAlternative(Alternative alternative) {
-        alternatives.add(alternative);
-    }
-
-    public void removeAlternative(Alternative alternative) {
-
-        if(alternatives.contains(alternative)
-                && alternatives.size() == MIN_ALTERNATIVES){
-            throw new TooFewAlternativesException(MIN_ALTERNATIVES,
-                                                  alternatives.size()-1);
-        }
-        alternatives.remove(alternative);
     }
 
     public boolean isArchived() {
@@ -83,27 +74,6 @@ public class Experiment{
     public void setArchived(boolean archived) {
         isArchived = archived;
     }
-
-    public Alternative participate(Client client){
-
-        //If this client has participated before, use that choice
-        if(participants.containsKey(client)){
-            return participants.get(client);
-        }
-
-        return chooseAlternative(client);
-    }
-
-    private Alternative chooseAlternative(Client client){
-
-        Random random = new Random();
-        if(random.nextDouble() > trafficFraction){
-            return getControl();
-        }
-
-        return strategy.choose(this, client);
-    }
-
 
     public Alternative getControl() {
         return alternatives.get(0);
@@ -115,5 +85,38 @@ public class Experiment{
 
     public void setStrategy(ChoiceStrategy strategy) {
         this.strategy = strategy;
+    }
+
+    public void setRandomGenerator(RandomGenerator randomGenerator) {
+        this.randomGenerator = randomGenerator;
+    }
+
+    public ParticipationResult participate(Client client){
+
+        Alternative alternative = participantRepository.getParticipant(this, client);
+
+        if(alternative != null)
+            return new ParticipationResult(true, alternative);
+
+        ParticipationResult chosen = chooseAlternative(client);
+        if(!chosen.isParticipating()){
+            return chosen;
+        }
+
+        Alternative actual = participantRepository.recordParticipation(
+                this,
+                client,
+                chosen.getAlternative());
+
+        return new ParticipationResult(true, actual);
+    }
+
+    private ParticipationResult chooseAlternative(Client client){
+
+        if(randomGenerator.getRandom() > getTrafficFraction()){
+            return new ParticipationResult(false, getControl());
+        }
+
+        return new ParticipationResult(true, getStrategy().choose(this, client));
     }
 }

@@ -2,16 +2,37 @@ package uk.co.creativefootprint.sixpack4j.model;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.co.creativefootprint.sixpack4j.exception.TooFewAlternativesException;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import uk.co.creativefootprint.sixpack4j.repository.ParticipantRepository;
 
 import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ExperimentTest{
 
     Experiment experiment1;
+
+    @Mock
+    ParticipantRepository mockParticipantRepository;
+
+    @Mock
+    Client mockClient;
+
+    @Mock
+    ChoiceStrategy mockChoiceStrategy;
+
+    @Mock
+    RandomGenerator mockRandomGenerator;
 
     @Before
     public void before(){
@@ -20,8 +41,14 @@ public class ExperimentTest{
                         new Alternative("a"),
                         new Alternative("b"),
                         new Alternative("c")
-                )
+                ),
+                mockParticipantRepository
         );
+
+        when(mockClient.getClientId()).thenReturn("client1");
+
+        experiment1.setStrategy(mockChoiceStrategy);
+        experiment1.setRandomGenerator(mockRandomGenerator);
     }
 
     @Test
@@ -34,50 +61,89 @@ public class ExperimentTest{
     }
 
     @Test
-    public void testAddAlternative(){
+    public void testGetName(){
 
-        experiment1.addAlternative(new Alternative("d"));
-
-        assertThat(experiment1.getAlternatives(),
-                hasItems(new Alternative("a"),
-                        new Alternative("b"),
-                        new Alternative("c"),
-                        new Alternative("c"))
-        );
-
+        assertThat(experiment1.getName(),
+                is("experiment1"));
     }
 
     @Test
-    public void testRemoveAlternativeNotPresent(){
+    public void testParticipateNotParticipatingAlready(){
 
-        experiment1.removeAlternative(new Alternative("d"));
+        Alternative chosenAlternative = new Alternative("a");
 
-        assertThat(experiment1.getAlternatives(),
-                hasItems(new Alternative("a"),
-                        new Alternative("b"),
-                        new Alternative("c"))
-        );
+        when(mockChoiceStrategy.choose(experiment1, mockClient)).thenReturn(chosenAlternative);
+        when(mockParticipantRepository.getParticipant(experiment1, mockClient)).thenReturn(null);
+        when(mockRandomGenerator.getRandom()).thenReturn(0.0);
+        when(mockParticipantRepository.recordParticipation(experiment1, mockClient, chosenAlternative)).thenReturn(chosenAlternative);
 
-    }
+        ParticipationResult result = experiment1.participate(mockClient);
 
-    @Test(expected=TooFewAlternativesException.class)
-    public void testRemoveAlternativeTooFewAlternatives(){
-        experiment1.removeAlternative(new Alternative("c"));
-        experiment1.removeAlternative(new Alternative("b"));
-    }
-
-    public void testRemoveAlternativeOk(){
-        experiment1.removeAlternative(new Alternative("c"));
-
-        assertThat(experiment1.getAlternatives(),
-                hasItems(new Alternative("a"),
-                        new Alternative("b"),
-                        new Alternative("d"))
-        );
+        assertThat(result, is(new ParticipationResult(true, chosenAlternative)));
     }
 
     @Test
-    public void testParticipate(){
+    public void testParticipateWhenIsParticipatingAlready(){
 
+        Alternative preExistingAlternative = new Alternative("b");
+
+        when(mockParticipantRepository.getParticipant(experiment1, mockClient)).thenReturn(preExistingAlternative);
+
+        ParticipationResult result = experiment1.participate(mockClient);
+
+        verify(mockRandomGenerator, never()).getRandom();
+        verify(mockChoiceStrategy, never()).choose(any(Experiment.class), any(Client.class));
+        verify(mockParticipantRepository, never()).recordParticipation(any(Experiment.class), any(Client.class), any(Alternative.class));
+
+        assertThat(result, is(new ParticipationResult(true, preExistingAlternative)));
+    }
+
+    @Test
+    public void testParticipantShouldGetControlAndNotParticipateAboveTrafficFraction(){
+
+        experiment1.setTrafficFraction(0); //no-one should participate
+
+        when(mockParticipantRepository.getParticipant(experiment1, mockClient)).thenReturn(null);
+        when(mockRandomGenerator.getRandom()).thenReturn(1.0);
+
+        ParticipationResult result = experiment1.participate(mockClient);
+
+        verify(mockChoiceStrategy, never()).choose(any(Experiment.class), any(Client.class));
+        verify(mockParticipantRepository, never()).recordParticipation(any(Experiment.class), any(Client.class), any(Alternative.class));
+
+        assertThat(result, is(new ParticipationResult(false, experiment1.getControl())));
+    }
+
+    @Test
+    public void testParticipantShouldGetControlAndNotParticipateWhenJustOverTrafficFraction(){
+
+        experiment1.setTrafficFraction(0.5); //50% will participate
+        Alternative chosenAlternative = new Alternative("b");
+
+        when(mockParticipantRepository.getParticipant(experiment1, mockClient)).thenReturn(null);
+        when(mockRandomGenerator.getRandom()).thenReturn(0.50001); //but we are just over the threshold
+
+        ParticipationResult result = experiment1.participate(mockClient);
+
+        verify(mockChoiceStrategy, never()).choose(any(Experiment.class), any(Client.class));
+        verify(mockParticipantRepository, never()).recordParticipation(any(Experiment.class), any(Client.class), any(Alternative.class));
+
+        assertThat(result, is(new ParticipationResult(false, experiment1.getControl())));
+    }
+
+    @Test
+    public void testParticipantShouldParticipateWhenMatchesTrafficFraction(){
+
+        experiment1.setTrafficFraction(0.5); //50% will participate
+        Alternative chosenAlternative = new Alternative("a");
+
+        when(mockParticipantRepository.getParticipant(experiment1, mockClient)).thenReturn(null);
+        when(mockRandomGenerator.getRandom()).thenReturn(0.5);//matches the traffic fraction
+        when(mockChoiceStrategy.choose(experiment1, mockClient)).thenReturn(chosenAlternative);
+        when(mockParticipantRepository.recordParticipation(experiment1, mockClient, chosenAlternative)).thenReturn(chosenAlternative);
+
+        ParticipationResult result = experiment1.participate(mockClient);
+
+        assertThat(result, is(new ParticipationResult(true, chosenAlternative)));
     }
 }
