@@ -41,6 +41,8 @@ public class ExperimentRepositoryTest {
                         new Alternative("b")
                 ));
         experiment.setDescription("my description");
+        experiment.setTrafficFraction(0.5);
+        experiment.archive();
 
         repository.create(experiment);
 
@@ -50,6 +52,8 @@ public class ExperimentRepositoryTest {
         //assert
         assertThat(result.getName(), is("example experiment"));
         assertThat(result.getDescription(), is("my description"));
+        assertThat(result.getTrafficFraction(), is(0.5));
+        assertThat(result.isArchived(), is(true));
     }
 
     private void deleteDb() {

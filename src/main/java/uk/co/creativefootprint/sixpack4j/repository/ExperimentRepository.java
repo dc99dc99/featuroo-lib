@@ -20,12 +20,13 @@ public class ExperimentRepository extends BaseRepository {
 
         try {
             PreparedStatement experimentStatement = connection.prepareStatement(
-                    "insert into Experiment(id, name,description,traffic_fraction,strategy) values (?,?,?,?,?)");
+                    "insert into Experiment(id, name,description,traffic_fraction,is_archived, strategy) values (?,?,?,?,?,?)");
             experimentStatement.setString(1, experiment.getId().toString());
             experimentStatement.setString(2, experiment.getName());
             experimentStatement.setString(3, experiment.getDescription());
             experimentStatement.setDouble(4, experiment.getTrafficFraction());
-            experimentStatement.setString(5, experiment.getStrategy().getClass().getCanonicalName());
+            experimentStatement.setBoolean(5, experiment.isArchived());
+            experimentStatement.setString(6, experiment.getStrategy().getClass().getCanonicalName());
             experimentStatement.executeUpdate();
 
             for(Alternative alternative : experiment.getAlternatives()){

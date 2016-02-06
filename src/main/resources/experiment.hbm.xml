@@ -11,5 +11,7 @@
         <id name="id" type="uuid-char" column="id" access="field"></id>
         <property name="name" column="name" type="string" access="field"/>
         <property name="description" column="description" type="string" access="field"/>
+        <property name="trafficFraction" column="traffic_fraction" type="double" access="field"/>
+        <property name="isArchived" column="is_archived" type="boolean" access="field"/>
     </class>
 </hibernate-mapping>
