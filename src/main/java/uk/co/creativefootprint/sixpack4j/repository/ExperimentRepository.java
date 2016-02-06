@@ -1,16 +1,55 @@
 package uk.co.creativefootprint.sixpack4j.repository;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import uk.co.creativefootprint.sixpack4j.exception.ExperimentNotFoundException;
+import org.hibernate.criterion.Restrictions;
+import uk.co.creativefootprint.sixpack4j.model.Alternative;
 import uk.co.creativefootprint.sixpack4j.model.Experiment;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
 
-public class ExperimentRepository {
+public class ExperimentRepository extends BaseRepository {
 
-    public boolean create(Experiment experiment){
-        throw new NotImplementedException();
+    public ExperimentRepository(String driver, String connectionString, String user, String password) {
+        super(driver, connectionString, user, password);
     }
 
-    public Experiment get(String name) throws ExperimentNotFoundException{
-        throw new NotImplementedException();
+    public boolean create(Experiment experiment){
+
+        Connection connection = getDBConnection();
+
+        try {
+            PreparedStatement experimentStatement = connection.prepareStatement(
+                    "insert into Experiment(id, name,description,traffic_fraction,strategy) values (?,?,?,?,?)");
+            experimentStatement.setString(1, experiment.getId().toString());
+            experimentStatement.setString(2, experiment.getName());
+            experimentStatement.setString(3, experiment.getDescription());
+            experimentStatement.setDouble(4, experiment.getTrafficFraction());
+            experimentStatement.setString(5, experiment.getStrategy().getClass().getCanonicalName());
+            experimentStatement.executeUpdate();
+
+            for(Alternative alternative : experiment.getAlternatives()){
+                PreparedStatement alternativeStatement = connection.prepareStatement(
+                        "insert into Alternative(experimentId, name) values (?,?)");
+                alternativeStatement.setString(1, experiment.getId().toString());
+                alternativeStatement.setString(2, alternative.getName());
+                alternativeStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    public Experiment get(String name){
+
+        List<Experiment> experiments = (List<Experiment>)runQuery(
+                                                s-> s.createCriteria( Experiment.class )
+                                                        .add(Restrictions.eq("name",name))
+                                                        .list()
+                                        );
+        return experiments.get(0);
     }
 }

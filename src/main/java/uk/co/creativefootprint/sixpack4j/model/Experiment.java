@@ -10,6 +10,7 @@ public class Experiment{
     private static int MIN_ALTERNATIVES = 2;
     private static double DEFAULT_TRAFFIC_FRACTION = 1;
 
+    private UUID id;
     private String name;
     private String description;
     private Alternative winner;
@@ -19,13 +20,21 @@ public class Experiment{
     private ChoiceStrategy strategy = new UniformChoiceStrategy();
     private RandomGenerator randomGenerator = new RandomGenerator();
 
+    private Experiment(){
+    }
+
     public Experiment(String name, List<Alternative> alternatives){
 
         if(alternatives.size()<MIN_ALTERNATIVES)
             throw new TooFewAlternativesException(MIN_ALTERNATIVES, alternatives.size());
 
+        this.id = UUID.randomUUID();
         this.name = name;
         this.alternatives = Collections.unmodifiableList(new ArrayList<>(alternatives));
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public String getName() {
