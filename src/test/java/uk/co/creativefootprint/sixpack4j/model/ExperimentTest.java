@@ -10,9 +10,11 @@ import uk.co.creativefootprint.sixpack4j.repository.ParticipantRepository;
 
 import java.util.Arrays;
 
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
+import static org.hamcrest.core.IsNot.not;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -46,6 +48,17 @@ public class ExperimentTest{
 
         experiment1.setStrategy(mockChoiceStrategy);
         experiment1.setRandomGenerator(mockRandomGenerator);
+    }
+
+    @Test
+    public void testSetsId(){
+        assertThat(experiment1.getId(), is(not(nullValue())));
+    }
+
+    @Test
+    public void testSetsAlternativeExperimentIds(){
+        assertThat(experiment1.getAlternatives().get(0).getExperiment(), is(experiment1));
+        assertThat(experiment1.getAlternatives().get(1).getExperiment(), is(experiment1));
     }
 
     @Test

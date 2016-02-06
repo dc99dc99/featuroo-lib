@@ -3,10 +3,14 @@ package uk.co.creativefootprint.sixpack4j.model;
 
 public class Alternative {
 
+    private Experiment experiment;
     private String name;
 
     public Alternative(String name){
         this.name=name;
+    }
+
+    private Alternative(){
     }
 
     public String getName() {
@@ -15,6 +19,14 @@ public class Alternative {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
     }
 
     @Override

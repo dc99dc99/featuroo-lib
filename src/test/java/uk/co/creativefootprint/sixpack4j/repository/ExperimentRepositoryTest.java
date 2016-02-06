@@ -30,6 +30,23 @@ public class ExperimentRepositoryTest {
         deleteDb();
         repository.createDb("db.sql");
     }
+    
+    @Test
+    public void createExperiment() {
+
+        //arrange
+        Experiment experiment = new Experiment("example experiment",
+                Arrays.asList(
+                        new Alternative("a"),
+                        new Alternative("b")
+                ));
+        experiment.setDescription("my description");
+        experiment.setTrafficFraction(0.5);
+        experiment.archive();
+
+        boolean success = repository.create(experiment);
+        assertThat(success, is(true));
+    }
 
     @Test
     public void getExperiment(){
@@ -57,7 +74,7 @@ public class ExperimentRepositoryTest {
     }
 
     private void deleteDb() {
-        Connection dbConnection = null;
+        Connection dbConnection;
         try {
             Class.forName(DB_DRIVER);
         } catch (ClassNotFoundException e) {

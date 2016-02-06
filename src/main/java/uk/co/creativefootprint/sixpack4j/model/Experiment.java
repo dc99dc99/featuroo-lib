@@ -30,7 +30,15 @@ public class Experiment{
 
         this.id = UUID.randomUUID();
         this.name = name;
-        this.alternatives = Collections.unmodifiableList(new ArrayList<>(alternatives));
+        setAlternatives(alternatives);
+    }
+
+    private void setAlternatives(List<Alternative> alternatives){
+        Collections.unmodifiableList(new ArrayList<>(alternatives));
+        this.alternatives=alternatives;
+        for(Alternative alternative:this.alternatives){
+            alternative.setExperiment(this);
+        }
     }
 
     public UUID getId() {

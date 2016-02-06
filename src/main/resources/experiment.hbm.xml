@@ -13,5 +13,10 @@
         <property name="description" column="description" type="string" access="field"/>
         <property name="trafficFraction" column="traffic_fraction" type="double" access="field"/>
         <property name="isArchived" column="is_archived" type="boolean" access="field"/>
+        <list name="alternatives" cascade="all" access="field">
+            <key column="experiment_id"/>
+            <list-index column="idx"/>
+            <one-to-many class="uk.co.creativefootprint.sixpack4j.model.Alternative"/>
+        </list>
     </class>
 </hibernate-mapping>

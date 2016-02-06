@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="uk.co.creativefootprint.sixpack4j.model.Alternative" table="Alternative">
+        <meta attribute="class-description">
+            This class contains the alternatives for an experiment.
+        </meta>
+        <id name="name" type="string" column="name" access="field"/>
+        <many-to-one name="experiment" column="experiment_id" class="uk.co.creativefootprint.sixpack4j.model.Experiment" access="field" not-null="true"/>
+    </class>
+</hibernate-mapping>

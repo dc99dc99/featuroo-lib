@@ -81,7 +81,7 @@ public class BaseRepository {
             tx.commit();
             return result;
         }catch (HibernateException e) {
-            if (tx!=null) tx.rollback();
+            if (tx != null) tx.rollback();
             e.printStackTrace();
             return null;
         }finally {

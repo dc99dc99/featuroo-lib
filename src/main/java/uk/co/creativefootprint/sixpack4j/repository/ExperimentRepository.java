@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 public class ExperimentRepository extends BaseRepository {
 
@@ -16,32 +17,8 @@ public class ExperimentRepository extends BaseRepository {
 
     public boolean create(Experiment experiment){
 
-        Connection connection = getDBConnection();
-
-        try {
-            PreparedStatement experimentStatement = connection.prepareStatement(
-                    "insert into Experiment(id, name,description,traffic_fraction,is_archived, strategy) values (?,?,?,?,?,?)");
-            experimentStatement.setString(1, experiment.getId().toString());
-            experimentStatement.setString(2, experiment.getName());
-            experimentStatement.setString(3, experiment.getDescription());
-            experimentStatement.setDouble(4, experiment.getTrafficFraction());
-            experimentStatement.setBoolean(5, experiment.isArchived());
-            experimentStatement.setString(6, experiment.getStrategy().getClass().getCanonicalName());
-            experimentStatement.executeUpdate();
-
-            for(Alternative alternative : experiment.getAlternatives()){
-                PreparedStatement alternativeStatement = connection.prepareStatement(
-                        "insert into Alternative(experimentId, name) values (?,?)");
-                alternativeStatement.setString(1, experiment.getId().toString());
-                alternativeStatement.setString(2, alternative.getName());
-                alternativeStatement.executeUpdate();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
+        UUID id = runQuery(s -> (UUID)s.save(experiment));
+        return id != null;
     }
 
     public Experiment get(String name){

@@ -4,9 +4,7 @@
 
 <hibernate-configuration>
     <session-factory>
-
-        <!-- List of XML mapping files -->
         <mapping resource="experiment.hbm.xml"/>
-
+        <mapping resource="alternative.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>
