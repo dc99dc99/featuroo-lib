@@ -1,6 +1,7 @@
 package uk.co.creativefootprint.sixpack4j.model;
 
 import uk.co.creativefootprint.sixpack4j.exception.InvalidExperimentException;
+import uk.co.creativefootprint.sixpack4j.exception.InvalidStrategyException;
 import uk.co.creativefootprint.sixpack4j.exception.TooFewAlternativesException;
 
 import java.util.*;
@@ -17,7 +18,8 @@ public class Experiment{
     private double trafficFraction = DEFAULT_TRAFFIC_FRACTION;
     private List<Alternative> alternatives;
     private boolean isArchived;
-    private ChoiceStrategy strategy = new UniformChoiceStrategy();
+    private ChoiceStrategy strategy;
+    private Class<? extends ChoiceStrategy> strategyClass = UniformChoiceStrategy.class;
     private RandomGenerator randomGenerator = new RandomGenerator();
 
     private Experiment(){
@@ -98,10 +100,18 @@ public class Experiment{
     }
 
     public ChoiceStrategy getStrategy() {
+        if(strategy ==null) {
+            try {
+                strategy = strategyClass.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new InvalidStrategyException(strategyClass.getCanonicalName());
+            }
+        }
         return strategy;
     }
 
     public void setStrategy(ChoiceStrategy strategy) {
+        this.strategyClass = strategy.getClass();
         this.strategy = strategy;
     }
 

@@ -2,8 +2,7 @@ package uk.co.creativefootprint.sixpack4j.repository;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.co.creativefootprint.sixpack4j.model.Alternative;
-import uk.co.creativefootprint.sixpack4j.model.Experiment;
+import uk.co.creativefootprint.sixpack4j.model.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
@@ -43,6 +43,7 @@ public class ExperimentRepositoryTest {
         experiment.setDescription("my description");
         experiment.setTrafficFraction(0.5);
         experiment.archive();
+        experiment.setStrategy(new TestChoiceStrategy());
 
         boolean success = repository.create(experiment);
         assertThat(success, is(true));
@@ -60,6 +61,7 @@ public class ExperimentRepositoryTest {
         experiment.setDescription("my description");
         experiment.setTrafficFraction(0.5);
         experiment.archive();
+        experiment.setStrategy(new TestChoiceStrategy());
 
         repository.create(experiment);
 
@@ -71,6 +73,7 @@ public class ExperimentRepositoryTest {
         assertThat(result.getDescription(), is("my description"));
         assertThat(result.getTrafficFraction(), is(0.5));
         assertThat(result.isArchived(), is(true));
+        assertThat(result.getStrategy(), instanceOf(TestChoiceStrategy.class));
     }
 
     private void deleteDb() {
