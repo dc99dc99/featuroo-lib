@@ -83,7 +83,7 @@ public class BaseRepository {
         }catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
-            return null;
+            throw e;
         }finally {
             session.close();
         }

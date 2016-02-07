@@ -53,10 +53,10 @@ public class ExperimentService {
     public ParticipationResult participate(String experimentName, Client client){
 
         Experiment experiment = experimentRepository.get(experimentName);
-        Alternative alternative = participantRepository.getParticipant(experiment, client);
+        Alternative alternative = participantRepository.getParticipation(experiment, client);
 
         if(alternative != null)
-            return new ParticipationResult(true, alternative);
+            return new ParticipationResult(client, true, alternative);
 
         ParticipationResult result = experiment.participate(client);
 
@@ -66,9 +66,10 @@ public class ExperimentService {
         Alternative actual = participantRepository.recordParticipation(
                 experiment,
                 client,
-                result.getAlternative());
+                result.getAlternative()
+        );
 
-        return new ParticipationResult(true, actual);
+        return new ParticipationResult(client, true, actual);
     }
 
     public Alternative convert(String name, Client client){
@@ -80,7 +81,7 @@ public class ExperimentService {
         Experiment experiment = experimentRepository.get(name);
         Kpi kpiItem = kpi == null ? null : new Kpi(kpi);
 
-        Alternative alternative = participantRepository.getParticipant(experiment, client);
+        Alternative alternative = participantRepository.getParticipation(experiment, client);
         if(alternative == null){
             throw new NotParticipatingException();
         }

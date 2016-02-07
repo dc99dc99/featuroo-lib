@@ -8,7 +8,9 @@
         <meta attribute="class-description">
             This class contains the alternatives for an experiment.
         </meta>
-        <id name="name" type="string" column="name" access="field"/>
-        <many-to-one name="experiment" column="experiment_id" class="uk.co.creativefootprint.sixpack4j.model.Experiment" access="field" not-null="true"/>
+        <composite-id>
+            <key-property name="name" type="string" column="name" access="field"/>
+            <key-many-to-one name="experiment" column="experiment_id" class="uk.co.creativefootprint.sixpack4j.model.Experiment" access="field"/>
+        </composite-id>
     </class>
 </hibernate-mapping>

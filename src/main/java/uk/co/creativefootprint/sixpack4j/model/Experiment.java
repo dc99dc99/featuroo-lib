@@ -4,9 +4,10 @@ import uk.co.creativefootprint.sixpack4j.exception.InvalidExperimentException;
 import uk.co.creativefootprint.sixpack4j.exception.InvalidStrategyException;
 import uk.co.creativefootprint.sixpack4j.exception.TooFewAlternativesException;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Experiment{
+public class Experiment implements Serializable{
 
     private static int MIN_ALTERNATIVES = 2;
     private static double DEFAULT_TRAFFIC_FRACTION = 1;
@@ -122,13 +123,13 @@ public class Experiment{
     public ParticipationResult participate(Client client){
 
         if(isArchived)
-            return new ParticipationResult(false, getControl());
+            return new ParticipationResult(client, false, getControl());
 
         if(randomGenerator.getRandom() > getTrafficFraction()){
-            return new ParticipationResult(false, getControl());
+            return new ParticipationResult(client, false, getControl());
         }
 
-        return new ParticipationResult(true, getStrategy().choose(this, client));
+        return new ParticipationResult(client, true, getStrategy().choose(this, client));
     }
 
     public void convert(Client client, Kpi kpi){

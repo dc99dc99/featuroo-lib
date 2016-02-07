@@ -87,7 +87,7 @@ public class ExperimentTest{
 
         ParticipationResult result = experiment1.participate(mockClient);
 
-        assertThat(result, is(new ParticipationResult(true, chosenAlternative)));
+        assertThat(result, is(new ParticipationResult(mockClient, true, chosenAlternative)));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class ExperimentTest{
         ParticipationResult result = experiment1.participate(mockClient);
 
         verify(mockChoiceStrategy, never()).choose(any(Experiment.class), any(Client.class));
-        assertThat(result, is(new ParticipationResult(false, experiment1.getControl())));
+        assertThat(result, is(new ParticipationResult(mockClient, false, experiment1.getControl())));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class ExperimentTest{
         ParticipationResult result = experiment1.participate(mockClient);
 
         verify(mockChoiceStrategy, never()).choose(any(Experiment.class), any(Client.class));
-        assertThat(result, is(new ParticipationResult(false, experiment1.getControl())));
+        assertThat(result, is(new ParticipationResult(mockClient, false, experiment1.getControl())));
     }
 
     @Test
@@ -128,7 +128,7 @@ public class ExperimentTest{
 
         ParticipationResult result = experiment1.participate(mockClient);
 
-        assertThat(result, is(new ParticipationResult(true, chosenAlternative)));
+        assertThat(result, is(new ParticipationResult(mockClient, true, chosenAlternative)));
     }
 
     @Test
@@ -139,7 +139,7 @@ public class ExperimentTest{
         ParticipationResult result = experiment1.participate(mockClient);
 
         verify(mockChoiceStrategy, never()).choose(any(Experiment.class), any(Client.class));
-        assertThat(result, is(new ParticipationResult(false, experiment1.getControl())));
+        assertThat(result, is(new ParticipationResult(mockClient, false, experiment1.getControl())));
     }
 
     public void testConvertNoKpi(){

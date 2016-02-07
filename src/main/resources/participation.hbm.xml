@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="uk.co.creativefootprint.sixpack4j.repository.Participation" table="Participation">
+        <meta attribute="class-description">
+            Records participation in an experiment.
+        </meta>
+        <id name="id" type="int" column="id" access="field">
+            <generator class="identity"/>
+        </id>
+        <property name="clientId" column="client_id" type="string" access="field"/>
+        <property name="experimentId" column="experiment_id" type="uuid-char" access="field"/>
+        <property name="alternativeName" column="alternative_name" type="string" access="field"/>
+    </class>
+</hibernate-mapping>

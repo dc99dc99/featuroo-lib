@@ -1,13 +1,15 @@
 package uk.co.creativefootprint.sixpack4j.model;
 
 
-public class Alternative {
+import java.io.Serializable;
+
+public class Alternative implements Serializable {
 
     private Experiment experiment;
     private String name;
 
     public Alternative(String name){
-        this.name=name;
+        this.name = name;
     }
 
     private Alternative(){
