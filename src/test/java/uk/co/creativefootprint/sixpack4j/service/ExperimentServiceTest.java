@@ -11,6 +11,7 @@ import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.co.creativefootprint.sixpack4j.exception.ExperimentNotFoundException;
+import uk.co.creativefootprint.sixpack4j.exception.NotParticipatingException;
 import uk.co.creativefootprint.sixpack4j.model.*;
 import uk.co.creativefootprint.sixpack4j.repository.ConversionRepository;
 import uk.co.creativefootprint.sixpack4j.repository.ExperimentRepository;
@@ -236,21 +237,32 @@ public class ExperimentServiceTest {
         experimentService.convert("Experiment 1", mockClient);
 
         verify(mockExperiment).convert(mockClient, null);
-        verify(mockConversionRepository).convert(mockClient, null);
+        verify(mockConversionRepository).convert(mockExperiment, mockClient, null);
     }
 
     @Test
     public void testConvertWithKpi() throws Exception {
 
         Alternative existingAlternative = new Alternative("a");
-        Kpi kpi = new Kpi("kpi1");
 
         when(mockExperimentRepository.get("Experiment 1")).thenReturn(mockExperiment);
         when(mockParticipantRepository.getParticipation(mockExperiment, mockClient)).thenReturn(existingAlternative);
 
         experimentService.convert("Experiment 1", mockClient,"kpi1");
 
-        verify(mockExperiment).convert(mockClient, kpi);
-        verify(mockConversionRepository).convert(mockClient, kpi);
+        verify(mockExperiment).convert(mockClient, "kpi1");
+        verify(mockConversionRepository).convert(mockExperiment, mockClient, "kpi1");
+    }
+
+    @Test(expected = NotParticipatingException.class)
+    public void testConvertNotParticipating() throws Exception {
+
+        when(mockExperimentRepository.get("Experiment 1")).thenReturn(mockExperiment);
+        when(mockParticipantRepository.getParticipation(mockExperiment, mockClient)).thenReturn(null);
+
+        experimentService.convert("Experiment 1", mockClient,"kpi1");
+
+        verify(mockExperiment, never()).convert(any(Client.class), any(String.class));
+        verify(mockConversionRepository, never()).convert(any(Experiment.class), any(Client.class), any(String.class));
     }
 }

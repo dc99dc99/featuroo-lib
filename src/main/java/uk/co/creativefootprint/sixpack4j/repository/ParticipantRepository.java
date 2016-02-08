@@ -42,7 +42,7 @@ public class ParticipantRepository extends BaseRepository {
             return existing;
 
         ParticipationRecord p = new ParticipationRecord(experiment, client, alternative);
-        runQuery(s -> s.save(client));
+        runQuery(s -> {s.saveOrUpdate(client);return null;});
         runQuery(s -> s.save(p));
         return alternative;
     }

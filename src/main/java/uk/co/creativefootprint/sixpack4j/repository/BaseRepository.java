@@ -20,6 +20,7 @@ import java.sql.Statement;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 

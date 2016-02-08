@@ -132,7 +132,7 @@ public class Experiment implements Serializable{
         return new ParticipationResult(client, true, getStrategy().choose(this, client));
     }
 
-    public void convert(Client client, Kpi kpi){
+    public void convert(Client client, String kpi){
 
         if(isArchived)
             throw new InvalidExperimentException("This experiment has been archived");

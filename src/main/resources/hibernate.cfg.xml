@@ -8,5 +8,6 @@
         <mapping resource="alternative.hbm.xml"/>
         <mapping resource="client.hbm.xml"/>
         <mapping resource="participation-record.hbm.xml"/>
+        <mapping resource="conversion-record.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

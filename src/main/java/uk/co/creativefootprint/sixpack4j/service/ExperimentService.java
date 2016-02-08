@@ -78,16 +78,15 @@ public class ExperimentService {
     public Alternative convert(String name, Client client, String kpi) throws NotParticipatingException{
 
         Experiment experiment = experimentRepository.get(name);
-        Kpi kpiItem = kpi == null ? null : new Kpi(kpi);
 
         Alternative alternative = participantRepository.getParticipation(experiment, client);
         if(alternative == null){
             throw new NotParticipatingException();
         }
 
-        experiment.convert(client, kpiItem);
+        experiment.convert(client, kpi);
 
-        conversionRepository.convert(client,kpiItem);
+        conversionRepository.convert(experiment, client, kpi);
 
         return alternative;
     }

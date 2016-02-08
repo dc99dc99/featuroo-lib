@@ -31,8 +31,6 @@ public class ExperimentTest{
     ChoiceStrategy mockChoiceStrategy;
     @Mock
     RandomGenerator mockRandomGenerator;
-    @Mock
-    Kpi mockKpi;
 
     @Before
     public void before(){
@@ -156,7 +154,7 @@ public class ExperimentTest{
     @Test
     public void testConvertWithKpi(){
         experiment1.unarchive();
-        experiment1.convert(mockClient, mockKpi);
+        experiment1.convert(mockClient, "kpi1");
     }
 
 }
