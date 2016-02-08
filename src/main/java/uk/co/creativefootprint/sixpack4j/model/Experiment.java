@@ -23,7 +23,7 @@ public class Experiment implements Serializable{
     private Class<? extends ChoiceStrategy> strategyClass = UniformChoiceStrategy.class;
     private RandomGenerator randomGenerator = new RandomGenerator();
 
-    private Experiment(){
+    Experiment(){
     }
 
     public Experiment(String name, List<Alternative> alternatives){

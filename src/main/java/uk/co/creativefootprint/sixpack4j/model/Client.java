@@ -10,7 +10,7 @@ public class Client {
 
     private String clientId;
 
-    private Client() {
+    Client() {
     }
 
     public Client(String clientId){

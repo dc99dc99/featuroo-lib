@@ -7,7 +7,7 @@ public class ParticipationRecord {
     private Client client;
     private String alternativeName;
 
-    public ParticipationRecord() {
+    ParticipationRecord() {
     }
 
     public ParticipationRecord(Experiment experiment, Client client, Alternative alternative) {

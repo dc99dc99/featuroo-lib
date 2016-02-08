@@ -12,7 +12,7 @@ public class Alternative implements Serializable {
         this.name = name;
     }
 
-    private Alternative(){
+    Alternative(){
     }
 
     public String getName() {
