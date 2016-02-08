@@ -10,6 +10,9 @@ public class Client {
 
     private String clientId;
 
+    private Client() {
+    }
+
     public Client(String clientId){
         this.clientId = clientId;
     }

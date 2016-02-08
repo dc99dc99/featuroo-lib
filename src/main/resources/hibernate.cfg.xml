@@ -6,6 +6,7 @@
     <session-factory>
         <mapping resource="experiment.hbm.xml"/>
         <mapping resource="alternative.hbm.xml"/>
-        <mapping resource="participation.hbm.xml"/>
+        <mapping resource="client.hbm.xml"/>
+        <mapping resource="participation-record.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

@@ -21,3 +21,7 @@ client_id varchar(255) NOT NULL,
 experiment_id varchar(200) NOT NULL,
 alternative_name  varchar(255) NOT NULL,
 );
+
+create table Client(
+client_id varchar(255) PRIMARY KEY
+);

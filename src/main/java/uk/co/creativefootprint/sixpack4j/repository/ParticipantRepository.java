@@ -16,10 +16,10 @@ public class ParticipantRepository extends BaseRepository {
          */
     public Alternative getParticipation(Experiment experiment, Client client){
 
-        Participation participant = (Participation)runQuery(
-                s-> s.createCriteria( Participation.class )
-                        .add(Restrictions.eq("clientId", client.getClientId()))
-                        .add(Restrictions.eq("experimentId", experiment.getId()))
+        ParticipationRecord participant = (ParticipationRecord)runQuery(
+                s-> s.createCriteria( ParticipationRecord.class )
+                        .add(Restrictions.eq("client", client))
+                        .add(Restrictions.eq("experiment", experiment))
                         .uniqueResult()
         );
         if(participant == null)
@@ -41,8 +41,9 @@ public class ParticipantRepository extends BaseRepository {
         if(existing != null)
             return existing;
 
-        Participation p = new Participation(experiment.getId(), client.getClientId(), alternative.getName());
-        runQuery(s -> (int)s.save(p));
+        ParticipationRecord p = new ParticipationRecord(experiment, client, alternative);
+        runQuery(s -> s.save(client));
+        runQuery(s -> s.save(p));
         return alternative;
     }
 }

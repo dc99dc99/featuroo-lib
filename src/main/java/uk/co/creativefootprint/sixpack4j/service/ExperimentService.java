@@ -1,6 +1,5 @@
 package uk.co.creativefootprint.sixpack4j.service;
 
-
 import uk.co.creativefootprint.sixpack4j.exception.NotParticipatingException;
 import uk.co.creativefootprint.sixpack4j.model.*;
 import uk.co.creativefootprint.sixpack4j.repository.ConversionRepository;
