@@ -6,6 +6,7 @@ import uk.co.creativefootprint.sixpack4j.repository.ConversionRepository;
 import uk.co.creativefootprint.sixpack4j.repository.ExperimentRepository;
 import uk.co.creativefootprint.sixpack4j.repository.ParticipantRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public class ExperimentService {
         return success ? experiment : null;
     }
 
-    public ParticipationResult participate(String experimentName, Client client){
+    public ParticipationResult participate(String experimentName, Client client, Date dateTime){
 
         Experiment experiment = experimentRepository.get(experimentName);
         Alternative alternative = participantRepository.getParticipation(experiment, client);
@@ -65,17 +66,18 @@ public class ExperimentService {
         Alternative actual = participantRepository.recordParticipation(
                 experiment,
                 client,
-                result.getAlternative()
+                result.getAlternative(),
+                dateTime
         );
 
         return new ParticipationResult(client, true, actual);
     }
 
-    public Alternative convert(String name, Client client){
-        return convert(name, client, null);
+    public Alternative convert(String name, Client client, Date dateTime){
+        return convert(name, client, dateTime, null);
     }
 
-    public Alternative convert(String name, Client client, String kpi) throws NotParticipatingException{
+    public Alternative convert(String name, Client client, Date dateTime, String kpi) throws NotParticipatingException{
 
         Experiment experiment = experimentRepository.get(name);
 
@@ -86,7 +88,7 @@ public class ExperimentService {
 
         experiment.convert(client, kpi);
 
-        conversionRepository.convert(experiment, client, kpi);
+        conversionRepository.convert(experiment, client, kpi, dateTime);
 
         return alternative;
     }

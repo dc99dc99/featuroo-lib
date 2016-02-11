@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -52,23 +53,23 @@ public class ConversionRepositoryTest {
     public void convert() {
 
         Client client = new Client("my client");
-        repository.convert(existingExperiment, client, "kpi1");
+        repository.convert(existingExperiment, client, "kpi1", new Date());
     }
 
     @Test
     public void convertTwiceSameKpi() {
 
         Client client = new Client("my client");
-        repository.convert(existingExperiment, client, "kpi1");
-        repository.convert(existingExperiment, client, "kpi1");
+        repository.convert(existingExperiment, client, "kpi1", new Date());
+        repository.convert(existingExperiment, client, "kpi1", new Date());
     }
 
     @Test
     public void convertTwiceDifferentKpi() {
 
         Client client = new Client("my client");
-        repository.convert(existingExperiment, client, "kpi1");
-        repository.convert(existingExperiment, client, "kpi2");
+        repository.convert(existingExperiment, client, "kpi1", new Date());
+        repository.convert(existingExperiment, client, "kpi2", new Date());
     }
 
 

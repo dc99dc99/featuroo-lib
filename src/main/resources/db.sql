@@ -20,6 +20,7 @@ id int auto_increment PRIMARY KEY,
 client_id varchar(255) NOT NULL,
 experiment_id varchar(200) NOT NULL,
 alternative_name  varchar(255) NOT NULL,
+date_time timestamp NOT NULL
 );
 
 create table Conversion(
@@ -27,6 +28,7 @@ id int auto_increment PRIMARY KEY,
 client_id varchar(255) NOT NULL,
 experiment_id varchar(200) NOT NULL,
 kpi varchar(255),
+date_time timestamp NOT NULL
 );
 
 create table Client(

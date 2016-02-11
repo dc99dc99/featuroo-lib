@@ -7,22 +7,12 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
-import uk.co.creativefootprint.sixpack4j.model.Experiment;
 
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Properties;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class BaseRepository {
 

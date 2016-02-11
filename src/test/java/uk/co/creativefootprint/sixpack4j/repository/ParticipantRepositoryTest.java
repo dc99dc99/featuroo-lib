@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -51,16 +52,16 @@ public class ParticipantRepositoryTest {
     @Test
     public void participateNotParticipatingAlready() {
 
-        Alternative result = repository.recordParticipation(existingExperiment, new Client("my client"), new Alternative("a"));
+        Alternative result = repository.recordParticipation(existingExperiment, new Client("my client"), new Alternative("a"), new Date());
         assertThat(result, is(new Alternative("a")));
     }
 
     @Test
     public void participateIsParticipatingAlready() {
 
-        Alternative result = repository.recordParticipation(existingExperiment, new Client("my client"), new Alternative("a"));
+        Alternative result = repository.recordParticipation(existingExperiment, new Client("my client"), new Alternative("a"), new Date());
         assertThat(result, is(new Alternative("a")));
-        Alternative result2 = repository.recordParticipation(existingExperiment, new Client("my client"), new Alternative("b"));
+        Alternative result2 = repository.recordParticipation(existingExperiment, new Client("my client"), new Alternative("b"), new Date());
         assertThat(result2, is(new Alternative("a")));
     }
 
@@ -70,7 +71,7 @@ public class ParticipantRepositoryTest {
         //arrange
         Client client = new Client("my client");
 
-        Alternative result = repository.recordParticipation(existingExperiment, client, new Alternative("b"));
+        Alternative result = repository.recordParticipation(existingExperiment, client, new Alternative("b"), new Date());
 
         Alternative read = repository.getParticipation(existingExperiment, client);
         assertThat(read,is(new Alternative("b")));

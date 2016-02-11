@@ -17,10 +17,14 @@ import uk.co.creativefootprint.sixpack4j.repository.ConversionRepository;
 import uk.co.creativefootprint.sixpack4j.repository.ExperimentRepository;
 import uk.co.creativefootprint.sixpack4j.repository.ParticipantRepository;
 
+import java.util.Date;
 import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.AdditionalMatchers.and;
+import static org.mockito.AdditionalMatchers.gt;
+import static org.mockito.AdditionalMatchers.lt;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -57,11 +61,11 @@ public class ExperimentServiceTest {
 
         when(mockExperimentRepository.get(any(String.class))).thenThrow(ExperimentNotFoundException.class);
 
-        experimentService.participate("experiment", mockClient);
+        experimentService.participate("experiment", mockClient, new Date());
 
         verify(mockParticipantRepository, never()).getParticipation(any(Experiment.class),any(Client.class));
         verify(mockExperiment, never()).participate(any(Client.class));
-        verify(mockParticipantRepository, never()).recordParticipation(any(Experiment.class),any(Client.class), any(Alternative.class));
+        verify(mockParticipantRepository, never()).recordParticipation(any(Experiment.class),any(Client.class), any(Alternative.class), any(Date.class));
 
     }
 
@@ -73,9 +77,9 @@ public class ExperimentServiceTest {
         when(mockExperimentRepository.get("experiment")).thenReturn(mockExperiment);
         when(mockParticipantRepository.getParticipation(mockExperiment, mockClient)).thenReturn(null);
         when(mockExperiment.participate(mockClient)).thenReturn(new ParticipationResult(mockClient, true, chosenAlternative));
-        when(mockParticipantRepository.recordParticipation(mockExperiment, mockClient,  chosenAlternative)).thenReturn(chosenAlternative);
+        when(mockParticipantRepository.recordParticipation(mockExperiment, mockClient,  chosenAlternative, new Date())).thenReturn(chosenAlternative);
 
-        ParticipationResult result = experimentService.participate("experiment", mockClient);
+        ParticipationResult result = experimentService.participate("experiment", mockClient, new Date());
 
         assertThat(result, is(new ParticipationResult(mockClient, true, chosenAlternative)));
     }
@@ -88,10 +92,10 @@ public class ExperimentServiceTest {
         when(mockExperimentRepository.get("experiment")).thenReturn(mockExperiment);
         when(mockParticipantRepository.getParticipation(mockExperiment, mockClient)).thenReturn(preExistingAlternative);
 
-        ParticipationResult result = experimentService.participate("experiment", mockClient);
+        ParticipationResult result = experimentService.participate("experiment", mockClient, new Date());
 
         verify(mockExperiment, never()).participate(any(Client.class));
-        verify(mockParticipantRepository, never()).recordParticipation(any(Experiment.class), any(Client.class), any(Alternative.class));
+        verify(mockParticipantRepository, never()).recordParticipation(any(Experiment.class), any(Client.class), any(Alternative.class), any(Date.class));
 
         assertThat(result, is(new ParticipationResult(mockClient, true, preExistingAlternative)));
     }
@@ -105,9 +109,9 @@ public class ExperimentServiceTest {
         when(mockExperimentRepository.get("experiment")).thenReturn(mockExperiment);
         when(mockParticipantRepository.getParticipation(mockExperiment, mockClient)).thenReturn(null);
         when(mockExperiment.participate(mockClient)).thenReturn(new ParticipationResult(mockClient, true, chosenAlternative));
-        when(mockParticipantRepository.recordParticipation(mockExperiment, mockClient, chosenAlternative)).thenReturn(foundAlternative);
+        when(mockParticipantRepository.recordParticipation(mockExperiment, mockClient, chosenAlternative, new Date())).thenReturn(foundAlternative);
 
-        ParticipationResult result = experimentService.participate("experiment", mockClient);
+        ParticipationResult result = experimentService.participate("experiment", mockClient, new Date());
 
         assertThat(result, is(new ParticipationResult(mockClient, true, foundAlternative)));
     }
@@ -121,9 +125,9 @@ public class ExperimentServiceTest {
         when(mockParticipantRepository.getParticipation(mockExperiment, mockClient)).thenReturn(null);
         when(mockExperiment.participate(mockClient)).thenReturn(new ParticipationResult(mockClient, false, experimentControl));
 
-        ParticipationResult result = experimentService.participate("experiment", mockClient);
+        ParticipationResult result = experimentService.participate("experiment", mockClient, new Date());
 
-        verify(mockParticipantRepository, never()).recordParticipation(any(Experiment.class),any(Client.class), any(Alternative.class));
+        verify(mockParticipantRepository, never()).recordParticipation(any(Experiment.class),any(Client.class), any(Alternative.class), any(Date.class));
         assertThat(result, is(new ParticipationResult(mockClient, false, experimentControl)));
     }
 
@@ -234,10 +238,11 @@ public class ExperimentServiceTest {
         when(mockExperimentRepository.get("Experiment 1")).thenReturn(mockExperiment);
         when(mockParticipantRepository.getParticipation(mockExperiment, mockClient)).thenReturn(existingAlternative);
 
-        experimentService.convert("Experiment 1", mockClient);
+        Date now = new Date();
+        experimentService.convert("Experiment 1", mockClient, now);
 
         verify(mockExperiment).convert(mockClient, null);
-        verify(mockConversionRepository).convert(mockExperiment, mockClient, null);
+        verify(mockConversionRepository).convert(eq(mockExperiment), eq(mockClient), eq(null), eq(now));
     }
 
     @Test
@@ -248,10 +253,11 @@ public class ExperimentServiceTest {
         when(mockExperimentRepository.get("Experiment 1")).thenReturn(mockExperiment);
         when(mockParticipantRepository.getParticipation(mockExperiment, mockClient)).thenReturn(existingAlternative);
 
-        experimentService.convert("Experiment 1", mockClient,"kpi1");
+        Date now = new Date();
+        experimentService.convert("Experiment 1", mockClient, now, "kpi1");
 
         verify(mockExperiment).convert(mockClient, "kpi1");
-        verify(mockConversionRepository).convert(mockExperiment, mockClient, "kpi1");
+        verify(mockConversionRepository).convert(mockExperiment, mockClient, "kpi1", now);
     }
 
     @Test(expected = NotParticipatingException.class)
@@ -260,9 +266,9 @@ public class ExperimentServiceTest {
         when(mockExperimentRepository.get("Experiment 1")).thenReturn(mockExperiment);
         when(mockParticipantRepository.getParticipation(mockExperiment, mockClient)).thenReturn(null);
 
-        experimentService.convert("Experiment 1", mockClient,"kpi1");
+        experimentService.convert("Experiment 1", mockClient, new Date(), "kpi1");
 
         verify(mockExperiment, never()).convert(any(Client.class), any(String.class));
-        verify(mockConversionRepository, never()).convert(any(Experiment.class), any(Client.class), any(String.class));
+        verify(mockConversionRepository, never()).convert(any(Experiment.class), any(Client.class), any(String.class), any(Date.class));
     }
 }
