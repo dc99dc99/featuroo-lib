@@ -1,5 +1,6 @@
 package uk.co.creativefootprint.sixpack4j.service;
 
+import uk.co.creativefootprint.sixpack4j.exception.ExperimentNotFoundException;
 import uk.co.creativefootprint.sixpack4j.exception.NotParticipatingException;
 import uk.co.creativefootprint.sixpack4j.model.*;
 import uk.co.creativefootprint.sixpack4j.repository.ConversionRepository;
@@ -54,6 +55,9 @@ public class ExperimentService {
 
         Experiment experiment = experimentRepository.get(experimentName);
         Alternative alternative = participantRepository.getParticipation(experiment, client);
+
+        if(experiment == null)
+            throw new ExperimentNotFoundException(experimentName);
 
         if(alternative != null)
             return new ParticipationResult(client, true, alternative);
