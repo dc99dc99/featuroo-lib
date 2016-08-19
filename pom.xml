@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.co.creativefootprint</groupId>
-    <artifactId>sixpack4j-lib</artifactId>
+    <artifactId>featuroo-lib</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <build>
@@ -54,6 +54,5 @@
         </dependency>
 
     </dependencies>
-
 
 </project>

@@ -4,7 +4,7 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="uk.co.creativefootprint.sixpack4j.model.Client" table="Client">
+    <class name="uk.co.creativefootprint.featuroo.model.Client" table="Client">
         <meta attribute="class-description">
             A client taking part in an experiment
         </meta>

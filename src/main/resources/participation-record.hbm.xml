@@ -4,15 +4,15 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="uk.co.creativefootprint.sixpack4j.model.ParticipationRecord" table="Participation">
+    <class name="uk.co.creativefootprint.featuroo.model.ParticipationRecord" table="Participation">
         <meta attribute="class-description">
             Records participation in an experiment.
         </meta>
         <id name="id" type="int" column="id" access="field">
             <generator class="identity"/>
         </id>
-        <many-to-one name="client" column="client_id" class="uk.co.creativefootprint.sixpack4j.model.Client" access="field"/>
-        <many-to-one name="experiment" column="experiment_id" class="uk.co.creativefootprint.sixpack4j.model.Experiment" access="field" />
+        <many-to-one name="client" column="client_id" class="uk.co.creativefootprint.featuroo.model.Client" access="field"/>
+        <many-to-one name="experiment" column="experiment_id" class="uk.co.creativefootprint.featuroo.model.Experiment" access="field" />
         <property name="alternativeName" column="alternative_name" type="string" access="field"/>
         <property name="dateTime" column="date_time" type="java.util.Date" access="field"/>
     </class>

@@ -4,13 +4,13 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="uk.co.creativefootprint.sixpack4j.model.Alternative" table="Alternative">
+    <class name="uk.co.creativefootprint.featuroo.model.Alternative" table="Alternative">
         <meta attribute="class-description">
             This class contains the alternatives for an experiment.
         </meta>
         <composite-id>
             <key-property name="name" type="string" column="name" access="field"/>
-            <key-many-to-one name="experiment" column="experiment_id" class="uk.co.creativefootprint.sixpack4j.model.Experiment" access="field"/>
+            <key-many-to-one name="experiment" column="experiment_id" class="uk.co.creativefootprint.featuroo.model.Experiment" access="field"/>
         </composite-id>
     </class>
 </hibernate-mapping>

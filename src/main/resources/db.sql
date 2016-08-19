@@ -27,7 +27,7 @@ create table Conversion(
 id int auto_increment PRIMARY KEY,
 client_id varchar(255) NOT NULL,
 experiment_id varchar(200) NOT NULL,
-kpi varchar(255),
+goal varchar(255),
 date_time timestamp NOT NULL
 );
 
