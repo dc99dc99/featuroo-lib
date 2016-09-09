@@ -16,27 +16,31 @@ public class ExperimentService {
     private ExperimentRepository experimentRepository;
     private ParticipantRepository participantRepository;
     private ConversionRepository conversionRepository;
+    private double defaultTrafficFraction;
 
     public ExperimentService(ExperimentRepository experimentRepository,
                              ParticipantRepository participantRepository,
-                             ConversionRepository conversionRepository){
+                             ConversionRepository conversionRepository,
+                             double defaultTrafficFraction){
 
         this.experimentRepository = experimentRepository;
         this.participantRepository = participantRepository;
         this.conversionRepository = conversionRepository;
+        this.defaultTrafficFraction = defaultTrafficFraction;
     }
 
     public Experiment getExperiment(String name){
         return experimentRepository.get(name);
     }
 
-    public Experiment createExperiment(String name, String description, List<String> alternatives, double trafficFraction,
+    public Experiment createExperiment(String name, String description, List<String> alternatives, Double trafficFraction,
                                        ChoiceStrategy choiceStrategy){
 
+        double realTrafficFraction = trafficFraction == null ? defaultTrafficFraction : trafficFraction;
         List<Alternative> alternativeItems = alternatives.stream().map(s -> new Alternative(s)).collect(Collectors.toList());
         Experiment experiment = new Experiment(name, alternativeItems);
         experiment.setDescription(description);
-        experiment.setTrafficFraction(trafficFraction);
+        experiment.setTrafficFraction(realTrafficFraction);
         experiment.setStrategy(choiceStrategy);
 
         boolean success = experimentRepository.create(experiment);

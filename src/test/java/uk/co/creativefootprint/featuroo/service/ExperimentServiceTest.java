@@ -53,7 +53,8 @@ public class ExperimentServiceTest {
 
         experimentService = new ExperimentService(mockExperimentRepository,
                                                   mockParticipantRepository,
-                                                  mockConversionRepository);
+                                                  mockConversionRepository,
+                                                  100);
     }
 
     @Test(expected = ExperimentNotFoundException.class)
