@@ -7,9 +7,6 @@ import uk.co.creativefootprint.featuroo.model.Client;
 import uk.co.creativefootprint.featuroo.model.Experiment;
 import uk.co.creativefootprint.featuroo.model.Goal;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Arrays;
@@ -32,8 +29,7 @@ public class ConversionRepositoryTest {
     public void before() throws SQLException {
 
         repository = new ConversionRepository(DB_DRIVER, DB_CONNECTION, DB_USER, DB_PASSWORD);
-        deleteDb();
-        repository.createDb("db.sql");
+        SqlTestHelper.resetDb();
         setupDb();
     }
 
@@ -70,24 +66,5 @@ public class ConversionRepositoryTest {
         Client client = new Client("my client");
         repository.convert(existingExperiment, client, new Goal("goal1"), new Date());
         repository.convert(existingExperiment, client, new Goal("goal2"), new Date());
-    }
-
-
-    private void deleteDb() {
-        Connection dbConnection;
-        try {
-            Class.forName(DB_DRIVER);
-        } catch (ClassNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-        try {
-            dbConnection = DriverManager.getConnection(DB_CONNECTION, DB_USER,
-                    DB_PASSWORD);
-            PreparedStatement s = dbConnection.prepareStatement("DROP ALL OBJECTS");
-            s.executeUpdate();
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
     }
 }
